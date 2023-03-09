@@ -36,3 +36,5 @@ jobs:
           echo test, and deploy your project.
           ls -l
           pwd
+          uname -a
+          ps aux
