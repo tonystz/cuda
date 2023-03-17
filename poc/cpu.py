@@ -2,7 +2,7 @@ import numpy as np
 import time
 
 s=time.time()
-a=np.loadtxt(g_file_pred, delimiter=' ', dtype=np.string_,converters=lambda v:v+b'\0')
+a=np.loadtxt('pre.log', delimiter=' ', dtype=np.string_,converters={0:lambda v:v+b'\0'})
 print('[step1]reload data:',time.time()-s,a.shape,a.dtype,a.size,a)
 
 s=time.time()
