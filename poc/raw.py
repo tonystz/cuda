@@ -1,7 +1,6 @@
 import time
 
-g_file='p.txt'
-g_file='access.log'
+g_file='/content/drive/MyDrive/access.log'
 g_file_pred='pre'+g_file
 def step_1_pre_process():
     skipline=0
