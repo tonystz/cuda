@@ -5,7 +5,7 @@ g_file='/content/drive/MyDrive/access.log'
 if os.path.exists(g_file):
     print("use google drive raw log")
 else:
-    g_file="poc/access.log"
+    g_file="../cuda/poc/access.log"
     print("use sample raw log")
 g_file_pred='pre.log'
 def step_1_pre_process():
