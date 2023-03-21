@@ -8,7 +8,7 @@ from pathlib import Path
 import os
 
 
-mandel_mod = pycuda.driver.module_from_file('/content/kernel.ptx')
+mandel_mod = pycuda.driver.module_from_file('./kernel.ptx')
 check_log = mandel_mod.get_function('check_log')
 
 a=np.loadtxt('/content/pre.log', delimiter=' ', dtype=np.string_,converters={0:lambda v:v+b'\0'})
