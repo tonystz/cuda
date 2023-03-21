@@ -124,8 +124,12 @@ __device__ int myAtoi(char* str)
     }
 
     __device__  ST_IPAddr *getHeapMem(){
-      int mem_size=ROW_NUM*COL_NUM*sizeof(ST_IPAddr);
-      ST_IPAddr *heap = (ST_IPAddr *)malloc(ROW_NUM*COL_NUM*sizeof(ST_IPAddr));
+      /*
+      https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html?highlight=dynamic#heap-memory-allocation
+      need set the limit, so hear for ROW_NUM=40
+      */ 
+      int mem_size=40*COL_NUM*sizeof(ST_IPAddr);
+      ST_IPAddr *heap = (ST_IPAddr *)malloc(mem_size);
 
       memset(heap, 0, mem_size);
       printf("Thread %d got pointer: %p\n", threadIdx.x, heap);
