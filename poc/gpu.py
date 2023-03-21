@@ -20,6 +20,10 @@ NUM_ROW=2
 NUM_COL=40
 '''
 
+print(cuda.Context.get_limit(cuda.limit.MALLOC_HEAP_SIZE))
+cuda.Context.set_limit(cuda.limit.MALLOC_HEAP_SIZE, 60*1024*1024)
+print(cuda.Context.get_limit(cuda.limit.MALLOC_HEAP_SIZE))
+
 na.reshape((NUM_ROW,NUM_COL))
 print('shape:',na.shape,na.size,na.dtype)
 print(na,na.data)
