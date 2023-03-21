@@ -193,7 +193,7 @@ __device__ int myAtoi(char* str)
       int dedup_cnt=0;    
       
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
-       printf("ST_IPAddr size: %lu\n",sizeof(ST_IPAddr));
+      // printf("ST_IPAddr size: %lu\n",sizeof(ST_IPAddr));
       //printf("index: threadIdx.x=%d blockIdx.x=%d  blockDim.x=%d \n",threadIdx.x,blockIdx.x,blockDim.x);
       //printf("thread id: [%d]  get str:%s  strlen=%d \n",idx,in_gpu+LOG_LEN+1, LOG_LEN);
 
