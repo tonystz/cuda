@@ -124,10 +124,8 @@ __device__ int myAtoi(char* str)
     }
 
     __device__  ST_IPAddr *getHeapMem(){
-      const int NUM_ROW=40;
-      const int NUM_COL=2383;
-      int mem_size=NUM_ROW*NUM_COL*sizeof(ST_IPAddr);
-      ST_IPAddr *heap = (ST_IPAddr *)malloc(NUM_ROW*NUM_COL*sizeof(ST_IPAddr));
+      int mem_size=ROW_NUM*COL_NUM*sizeof(ST_IPAddr);
+      ST_IPAddr *heap = (ST_IPAddr *)malloc(ROW_NUM*COL_NUM*sizeof(ST_IPAddr));
 
       memset(heap, 0, mem_size);
       printf("Thread %d got pointer: %p\n", threadIdx.x, heap);

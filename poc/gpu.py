@@ -1,11 +1,8 @@
 #!python 
 import pycuda.driver as cuda
 import pycuda.autoinit
-from pycuda.compiler import SourceModule
 from pycuda import gpuarray
 import numpy as np
-from pathlib import Path
-import os
 
 
 mandel_mod = pycuda.driver.module_from_file('./kernel.ptx')
