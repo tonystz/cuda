@@ -110,23 +110,6 @@ extern "C" {
       return 1;
     }
 
-    __device__ void pushDedup(ST_IPAddr*dedup,char *ipAddr,int*dedup_cnt){
-      int c=0;
-      for(;c<COL_NUM;c++){
-        if(strEqua(dedup[c].ipAddr,ipAddr)){
-          dedup[c].cnt ++;
-          break;
-        }else{
-          if(dedup[c].ipAddr[0] == 0){
-            mystrcpy(dedup[c].ipAddr,ipAddr);
-            dedup[c].cnt = 1;
-            (*dedup_cnt)++;
-            break;
-          }
-        }
-      }
-  }
-
   __device__  ST_IPAddr *getHeapMem(){
       /*
       https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html?highlight=dynamic#heap-memory-allocation
@@ -152,7 +135,7 @@ extern "C" {
       }
   }
 
-  __device__ void pushDedupSummary(ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
+  __device__ void pushDedupStack(ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
       int c=0;
       for(;c<COL_NUM;c++){
         if(strEqua(dedup[c].ipAddr,st->ipAddr)){
@@ -184,7 +167,7 @@ extern "C" {
               ST_IPAddr st;
               st.cnt=splitStrInt(out_gpu+r*rowOffset+c*LOG_LEN,tmpBuff);
               mystrcpy(st.ipAddr,tmpBuff);
-              pushDedupSummary(heap,&st,&heap_dedup_cnt);
+              pushDedupStack(heap,&st,&heap_dedup_cnt);
            }
          }
        }
@@ -221,7 +204,10 @@ extern "C" {
           //copy 404 to out_gpu
           //mystrcpy(out_gpu+rowStartIndex+dedup_cnt*LOG_LEN,sub);
           //mystrcpy(dedup[c].ipAddr,sub);
-          pushDedup(dedup,sub,&dedup_cnt);
+          ST_IPAddr st;
+          mystrcpy(st.ipAddr,sub);
+          st.cnt=1;
+          pushDedupStack(dedup,&st,&dedup_cnt);
           //printf("rowStartIndex=%d,c=%d  sub=%s add=%d dedup_cnt=%d \n",rowStartIndex,c,sub,dedup[c].cnt,dedup_cnt);
           
         }
