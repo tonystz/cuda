@@ -15,6 +15,7 @@ extern "C" {
       char ipAddr[LOG_LEN];
       int cnt;
     }ST_IPAddr;
+    
     __device__ void mystrcpy(char *out,char *in){
       int i=0;
       for(i=0;in[i]!=0;i++){
@@ -22,66 +23,68 @@ extern "C" {
       }
       out[i]=0;
     }
-__device__ char* myitoa(int i, char b[]){
-    char const digit[] = "0123456789";
-    char* p = b;
-    if(i<0){
-        *p++ = '-';
-        i *= -1;
-    }
-    int shifter = i;
-    do{ //Move to where representation ends
-        ++p;
-        shifter = shifter/10;
-    }while(shifter);
-    *p = '\0';
-    do{ //Move back, inserting digits as u go
-        *--p = digit[i%10];
-        i = i/10;
-    }while(i);
-    return b;
-}
 
-__device__ int myAtoi(char* str)
-{
-    // Initialize result
-    int res = 0;
- 
-    for (int i = 0; str[i] != '\0'; ++i)
-        res = res * 10 + str[i] - '0';
- 
-    // return result.
-    return res;
-}
+    __device__ char* myitoa(int i, char b[]){
+        char const digit[] = "0123456789";
+        char* p = b;
+        if(i<0){
+            *p++ = '-';
+            i *= -1;
+        }
+        int shifter = i;
+        do{ //Move to where representation ends
+            ++p;
+            shifter = shifter/10;
+        }while(shifter);
+        *p = '\0';
+        do{ //Move back, inserting digits as u go
+            *--p = digit[i%10];
+            i = i/10;
+        }while(i);
+        return b;
+    }
 
- __device__ int splitStrInt(char *s, char addr[]){
-    int i=0;
-    while(s[i] !=0){
-        if(s[i]=='#')break;
-        addr[i]=s[i];
+    __device__ int myAtoi(char* str)
+    {
+        // Initialize result
+        int res = 0;
+    
+        for (int i = 0; str[i] != '\0'; ++i)
+            res = res * 10 + str[i] - '0';
+    
+        // return result.
+        return res;
+    }
+
+    __device__ int splitStrInt(char *s, char addr[]){
+        int i=0;
+        while(s[i] !=0){
+            if(s[i]=='#')break;
+            addr[i]=s[i];
+            i++;
+        }
+        addr[i]=0;
+        return myAtoi(s+i+1);
+    }
+
+    __device__ char* mergStrInt(char*s, int n, char a[]){
+        int i=0;
+        while(s[i]!=0){
+            a[i]=s[i];
+            i++;
+        }
+        a[i]='#';
         i++;
+        char buff[512];
+        myitoa(n,buff);
+        int j=0;
+        while(buff[j] !=0){
+            a[i+j]=buff[j];
+            j++;
+        }
+        a[i+j]=0;
+        return a;
     }
-    addr[i]=0;
-    return myAtoi(s+i+1);
- }
- __device__ char* mergStrInt(char*s, int n, char a[]){
-    int i=0;
-    while(s[i]!=0){
-        a[i]=s[i];
-        i++;
-    }
-    a[i]='#';
-    i++;
-    char buff[512];
-    myitoa(n,buff);
-    int j=0;
-    while(buff[j] !=0){
-        a[i+j]=buff[j];
-        j++;
-    }
-    a[i+j]=0;
-    return a;
- }
     __device__  int find_404_ipaddr(char*in_gpu,char outAddr[],int rowStartIndex ,int strStartIndex){
         int index=0;
         for(int i = 0; i<LOG_LEN; i++){
@@ -106,6 +109,7 @@ __device__ int myAtoi(char* str)
       }
       return 1;
     }
+
     __device__ void pushDedup(ST_IPAddr*dedup,char *ipAddr,int*dedup_cnt){
       int c=0;
       for(;c<COL_NUM;c++){
@@ -121,9 +125,9 @@ __device__ int myAtoi(char* str)
           }
         }
       }
-    }
+  }
 
-    __device__  ST_IPAddr *getHeapMem(){
+  __device__  ST_IPAddr *getHeapMem(){
       /*
       https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html?highlight=dynamic#heap-memory-allocation
       need set the limit, so hear for ROW_NUM=40
@@ -135,9 +139,9 @@ __device__ int myAtoi(char* str)
       printf("Thread %d got pointer: %p heapsize=%d\n", threadIdx.x, heap,mem_size);
       //free(heap);
       return heap;
-    }
+  }
 
-    __device__ void showHeap(ST_IPAddr *heap,int dedup_cnt){
+  __device__ void showHeap(ST_IPAddr *heap,int dedup_cnt){
       //print heap memory
       printf("Thread:%d Total:%d\n", threadIdx.x, dedup_cnt);
       for(int i=0;i<dedup_cnt;i++){
@@ -146,9 +150,9 @@ __device__ int myAtoi(char* str)
         }
         
       }
-    }
+  }
 
-    __device__ void pushDedupSummary(ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
+  __device__ void pushDedupSummary(ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
       int c=0;
       for(;c<COL_NUM;c++){
         if(strEqua(dedup[c].ipAddr,st->ipAddr)){
@@ -163,9 +167,9 @@ __device__ int myAtoi(char* str)
           }
         }
       }
-    }
+  }
 
-    __device__ void summary(char*out_gpu, ST_IPAddr *heap){
+  __device__ void summary(char*out_gpu, ST_IPAddr *heap){
       //int idx = threadIdx.x + blockIdx.x * blockDim.x;
       int rowOffset=COL_NUM*LOG_LEN;
       char tmpBuff[LOG_LEN];
@@ -187,10 +191,9 @@ __device__ int myAtoi(char* str)
 
        showHeap(heap,heap_dedup_cnt);
 
-    }
+  }
 
-    __global__ void check_log(char*in_gpu,char* out_gpu)
-    { 
+  __global__ void check_log(char*in_gpu,char* out_gpu){ 
       ST_IPAddr dedup[COL_NUM];
       int dedup_cnt=0;    
       
