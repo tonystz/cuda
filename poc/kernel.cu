@@ -110,7 +110,7 @@ extern "C" {
       return 1;
     }
 
-  __device__  ST_IPAddr *getHeapMem(){
+  __device__  ST_IPAddr *getHeapDedupStack(){
       /*
       https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html?highlight=dynamic#heap-memory-allocation
       need set the limit, so hear for ROW_NUM=40
@@ -124,18 +124,18 @@ extern "C" {
       return heap;
   }
 
-  __device__ void showHeap(ST_IPAddr *heap,int dedup_cnt){
+  __device__ void dedupStackShow(ST_IPAddr *heap,int dedup_cnt){
       //print heap memory
       printf("Thread:%d Total:%d\n", threadIdx.x, dedup_cnt);
       for(int i=0;i<dedup_cnt;i++){
         if(heap[i].cnt>THRESHOLD){
-            printf("[showHeap]Thread %d addr: %s=%d\n", threadIdx.x, heap[i].ipAddr,heap[i].cnt);
+            printf("[dedupStackShow]Thread %d addr: %s=%d\n", threadIdx.x, heap[i].ipAddr,heap[i].cnt);
         }
         
       }
   }
 
-  __device__ void pushDedupStack(int max_stack_cnt,ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
+  __device__ void dedupStackPush(int max_stack_cnt,ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
       int c=0;
       for(;c<max_stack_cnt;c++){
         if(strEqua(dedup[c].ipAddr,st->ipAddr)){
@@ -167,12 +167,12 @@ extern "C" {
               ST_IPAddr st;
               st.cnt=splitStrInt(out_gpu+r*rowOffset+c*LOG_LEN,tmpBuff);
               mystrcpy(st.ipAddr,tmpBuff);
-              pushDedupStack(ROW_NUM*COL_NUM,heap,&st,&heap_dedup_cnt);
+              dedupStackPush(ROW_NUM*COL_NUM,heap,&st,&heap_dedup_cnt);
            }
          }
        }
 
-       showHeap(heap,heap_dedup_cnt);
+       dedupStackShow(heap,heap_dedup_cnt);
 
   }
 
@@ -207,7 +207,7 @@ extern "C" {
           ST_IPAddr st;
           mystrcpy(st.ipAddr,sub);
           st.cnt=1;
-          pushDedupStack(COL_NUM,dedup,&st,&dedup_cnt);
+          dedupStackPush(COL_NUM,dedup,&st,&dedup_cnt);
           //printf("rowStartIndex=%d,c=%d  sub=%s add=%d dedup_cnt=%d \n",rowStartIndex,c,sub,dedup[c].cnt,dedup_cnt);
           
         }
@@ -228,7 +228,7 @@ extern "C" {
 
       if(idx ==0 ){
         // in global mem to dedup
-        ST_IPAddr *heap=getHeapMem();
+        ST_IPAddr *heap=getHeapDedupStack();
         summary(out_gpu,heap);
         if(heap)free(heap);
       }
