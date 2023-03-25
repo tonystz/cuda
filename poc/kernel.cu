@@ -135,9 +135,9 @@ extern "C" {
       }
   }
 
-  __device__ void pushDedupStack(ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
+  __device__ void pushDedupStack(int max_stack_cnt,ST_IPAddr*dedup, ST_IPAddr *st,int*dedup_cnt){
       int c=0;
-      for(;c<COL_NUM;c++){
+      for(;c<max_stack_cnt;c++){
         if(strEqua(dedup[c].ipAddr,st->ipAddr)){
           dedup[c].cnt += st->cnt;
           break;
@@ -167,7 +167,7 @@ extern "C" {
               ST_IPAddr st;
               st.cnt=splitStrInt(out_gpu+r*rowOffset+c*LOG_LEN,tmpBuff);
               mystrcpy(st.ipAddr,tmpBuff);
-              pushDedupStack(heap,&st,&heap_dedup_cnt);
+              pushDedupStack(ROW_NUM*COL_NUM,heap,&st,&heap_dedup_cnt);
            }
          }
        }
@@ -207,7 +207,7 @@ extern "C" {
           ST_IPAddr st;
           mystrcpy(st.ipAddr,sub);
           st.cnt=1;
-          pushDedupStack(dedup,&st,&dedup_cnt);
+          pushDedupStack(COL_NUM,dedup,&st,&dedup_cnt);
           //printf("rowStartIndex=%d,c=%d  sub=%s add=%d dedup_cnt=%d \n",rowStartIndex,c,sub,dedup[c].cnt,dedup_cnt);
           
         }
