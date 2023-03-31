@@ -2,8 +2,8 @@ extern "C" {
 
  #include <stdlib.h>
 
- const int COL_NUM=2383;
- const int ROW_NUM=479;
+ const int COL_NUM=479;
+ const int ROW_NUM=2383;
  const int LOG_LEN=44;
  const int THRESHOLD=500;
  
@@ -190,7 +190,8 @@ extern "C" {
       int strStartIndex=0;//string start locaion
       int rowOffset=COL_NUM*LOG_LEN;
       if(idx > ROW_NUM){
-        printf("[ERROR]idx=%d, rowCnt=%d, we want one thread process all one rows'data .please tune",idx,ROW_NUM);
+        //printf("[ERROR]idx=%d, rowCnt=%d, we want one thread process all one rows'data .please tune",idx,ROW_NUM);
+        return;
       }
       
       int rowStartIndex=rowOffset*idx;
@@ -214,7 +215,7 @@ extern "C" {
       }
 
       //int rowOffsetForInt=COL_NUM*4;
-      __syncthreads();
+      //__syncthreads();
       char tmpBuff[LOG_LEN*2];
       for(int c=0;c<dedup_cnt;c++){
          mergStrInt(dedup[c].ipAddr,dedup[c].cnt,tmpBuff);
@@ -224,14 +225,15 @@ extern "C" {
          //printf("thread[%d] rowStartIndex[%d][%d] addr:%s = %d\n",idx,rowStartIndex,c,dedup[c].ipAddr,dedup[c].cnt);
       }
       //printf("thread[%d] addrCnt:%d\n",idx,dedup_cnt);
-      __syncthreads();
+      //__syncthreads();
 
-      if(idx ==0 ){
+      //move to host size
+      /*if(idx ==0 ){
         // in global mem to dedup
         ST_IPAddr *heap=getHeapDedupStack();
         summary(out_gpu,heap);
         if(heap)free(heap);
-      }
+      }*/
     }
     
 }
